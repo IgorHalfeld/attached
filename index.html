@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Attached</title>
+</head>
+<body>
+
+  <h1 att-bind="name">Hello World</h1>
+  <input att-model="name" type="text">
+  <script src="lib/jquery/dist/jquery.js"></script>
+  <script src="attached.js"></script>
+
+  <script>
+    $.fn.attached({
+      name: 'igor',
+      age: 18,
+      status: true
+    })
+  </script>
+</body>
+</html>
