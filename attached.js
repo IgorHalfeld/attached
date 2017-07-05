@@ -1,5 +1,5 @@
 
-(function ($, window, undefined) {
+(function (window, undefined) {
 
   var Observer = function() {
     this.subs = {};
@@ -120,10 +120,5 @@
    * Init all applicatiom
    * @param  {Object} options
    */
-  $.fn.attached = function(options) {
-    console.log('Attached is started!');
-    console.log(options);
-
-    window.attached = new Attached(options);
-  };
-})(jQuery, window)
+  window.Attached = Attached;
+})(window)
