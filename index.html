@@ -9,15 +9,19 @@
 <body>
 
   <h1 att-bind="name">Hello World</h1>
+  <h1 att-bind="level.admin">try</h1>
   <input att-model="name" type="text">
   <script src="attached.js"></script>
 
   <script>
     new Attached({
       name: 'igor',
+      level: {
+        admin: 'É admin'
+      },
       age: 18,
       status: true
-    })  
+    })
   </script>
 </body>
 </html>

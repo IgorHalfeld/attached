@@ -11,10 +11,11 @@
    */
   Observer.prototype.notify = function(key) {
     if (!this.subs[key]) return;
-    this.subs[key].forEach(function(handler) {
-      handler();
-    });
-  };
+
+    for (var item in this.subs[key]) {
+      this.subs[key][item].handler();
+    }
+  }
 
   /**
    * Register a callback to a key
@@ -108,12 +109,22 @@
   Attached.prototype.checkObjectDepth = function(property, value) {
     console.log('Value without data treated', property);
     var _keys = property.split(/\./g);
+    var _self = this;
     // var _ob = {};
     // _ob[_keys[0]] = {};
     // _ob[_keys[0]][_keys[1]] = value;
 
+    console.log('Array', _self);
     console.log('Final value', _keys);
     // return _ob;
+
+    function _getTheRightNestedProperty (context, array) {
+      var finalToReturn = null;
+
+      for (var property in array) {
+        // context.$subject
+      }
+    }
   };
 
   /**
