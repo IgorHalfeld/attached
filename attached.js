@@ -1,6 +1,8 @@
 
 (function (window, undefined) {
 
+  'use strict';
+
   var Observer = function() {
     this.subs = {};
   };
@@ -79,7 +81,6 @@
     _nodes.forEach(function(node) {
       var key = node.attributes['att-bind'].value;
 
-      _self.checkObjectDepth(key, ob[key]);
       node.textContent = ob[key];
 
       _self.$subject.register(key, function() {
@@ -104,27 +105,6 @@
         _self.ob[_key] = _value;
       });
     });
-  };
-
-  Attached.prototype.checkObjectDepth = function(property, value) {
-    console.log('Value without data treated', property);
-    var _keys = property.split(/\./g);
-    var _self = this;
-    // var _ob = {};
-    // _ob[_keys[0]] = {};
-    // _ob[_keys[0]][_keys[1]] = value;
-
-    console.log('Array', _self);
-    console.log('Final value', _keys);
-    // return _ob;
-
-    function _getTheRightNestedProperty (context, array) {
-      var finalToReturn = null;
-
-      for (var property in array) {
-        // context.$subject
-      }
-    }
   };
 
   /**
