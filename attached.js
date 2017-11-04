@@ -11,10 +11,9 @@
    */
   Observer.prototype.notify = function(key) {
     if (!this.subs[key]) return;
-
-    for (var item in this.subs[key]) {
-      this.subs[key][item].handler();
-    }
+    this.subs[key].forEach(function(handler) {
+      handler();
+    });
   }
 
   /**
@@ -28,71 +27,56 @@
   };
 
   function Attached(ob) {
-    this.$subject = new Observer(ob);
-    this.initEngine(ob);
-    this.parserViewToModel(ob);
+    this.$subject = new Observer();
     this.ob = ob;
+    this.makeReactive();
+    this.parserViewToModel();
   }
 
   /**
-   * Check each property of object
-   * @param  {Object} ob
-   */
-  Attached.prototype.initEngine = function(ob) {
-    for (var key in ob) {
-      if (ob.hasOwnProperty(key)) {
-        this.makeReactive(ob, key);
-      }
-    }
-  };
-
-  /**
    * Make the object reactive to changes
-   * @param  {Object} ob
-   * @param  {Object} key
    */
-  Attached.prototype.makeReactive = function(ob, key) {
-    var _value = ob[key];
+  Attached.prototype.makeReactive = function() {
     var _self = this;
 
-    Object.defineProperty(ob, key, {
-      get: function() {
-        return _value;
+    const handler = {
+      get(target, propertyKey) {
+        return target[propertyKey];
       },
-      set: function(newValue) {
-        _value = newValue;
 
-        _self.$subject.notify(key);
+      set(target, propertyKey, newValue) {
+        target[propertyKey] = newValue
+
+        _self.$subject.notify(propertyKey);
       }
-    });
-    this.parserModelToView(ob);
+    };
+
+    this.ob = new Proxy(this.ob, handler);
+    this.parserModelToView();
   };
 
   /**
    * Parser all data from model to view
-   * @param  {Object} ob
    */
-  Attached.prototype.parserModelToView = function(ob) {
+  Attached.prototype.parserModelToView = function() {
     var _nodes = document.querySelectorAll('[att-bind]');
     var _self = this;
 
     _nodes.forEach(function(node) {
       var key = node.attributes['att-bind'].value;
 
-      _self.checkObjectDepth(key, ob[key]);
-      node.textContent = ob[key];
+      node.textContent = _self.ob[key];
 
       _self.$subject.register(key, function() {
-        node.textContent = ob[key];
+        node.textContent = _self.ob[key];
       });
     });
   };
 
   /**
    * Parser all data from view to model
-   * @param  {Object} ob
    */
-  Attached.prototype.parserViewToModel = function(ob) {
+  Attached.prototype.parserViewToModel = function() {
     var _nodes = document.querySelectorAll('[att-model]');
     var _self = this;
 
@@ -104,27 +88,6 @@
         _self.ob[_key] = _value;
       });
     });
-  };
-
-  Attached.prototype.checkObjectDepth = function(property, value) {
-    console.log('Value without data treated', property);
-    var _keys = property.split(/\./g);
-    var _self = this;
-    // var _ob = {};
-    // _ob[_keys[0]] = {};
-    // _ob[_keys[0]][_keys[1]] = value;
-
-    console.log('Array', _self);
-    console.log('Final value', _keys);
-    // return _ob;
-
-    function _getTheRightNestedProperty (context, array) {
-      var finalToReturn = null;
-
-      for (var property in array) {
-        // context.$subject
-      }
-    }
   };
 
   /**
