@@ -30,7 +30,7 @@
   };
 
   function Attached(ob) {
-    this.$subject = new Observer(ob);
+    this.$subject = new Observer();
     this.initEngine(ob);
     this.parserViewToModel(ob);
     this.ob = ob;
