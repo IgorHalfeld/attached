@@ -14,9 +14,9 @@
   Observer.prototype.notify = function(key) {
     if (!this.subs[key]) return;
 
-    for (var item in this.subs[key]) {
-      this.subs[key][item].handler();
-    }
+    this.subs[key].forEach(function(handler) {
+      handler();
+    });
   }
 
   /**
