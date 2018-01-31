@@ -1,8 +1,6 @@
 
 (function (window, undefined) {
 
-  'use strict';
-
   var Observer = function() {
     this.subs = {};
   };
@@ -13,7 +11,6 @@
    */
   Observer.prototype.notify = function(key) {
     if (!this.subs[key]) return;
-
     this.subs[key].forEach(function(handler) {
       handler();
     });
@@ -31,69 +28,55 @@
 
   function Attached(ob) {
     this.$subject = new Observer();
-    this.initEngine(ob);
-    this.parserViewToModel(ob);
     this.ob = ob;
+    this.makeReactive();
+    this.parserViewToModel();
   }
 
   /**
-   * Check each property of object
-   * @param  {Object} ob
-   */
-  Attached.prototype.initEngine = function(ob) {
-    for (var key in ob) {
-      if (ob.hasOwnProperty(key)) {
-        this.makeReactive(ob, key);
-      }
-    }
-  };
-
-  /**
    * Make the object reactive to changes
-   * @param  {Object} ob
-   * @param  {Object} key
    */
-  Attached.prototype.makeReactive = function(ob, key) {
-    var _value = ob[key];
+  Attached.prototype.makeReactive = function() {
     var _self = this;
 
-    Object.defineProperty(ob, key, {
-      get: function() {
-        return _value;
+    const handler = {
+      get(target, propertyKey) {
+        return target[propertyKey];
       },
-      set: function(newValue) {
-        _value = newValue;
 
-        _self.$subject.notify(key);
+      set(target, propertyKey, newValue) {
+        target[propertyKey] = newValue
+
+        _self.$subject.notify(propertyKey);
       }
-    });
-    this.parserModelToView(ob);
+    };
+
+    this.ob = new Proxy(this.ob, handler);
+    this.parserModelToView();
   };
 
   /**
    * Parser all data from model to view
-   * @param  {Object} ob
    */
-  Attached.prototype.parserModelToView = function(ob) {
+  Attached.prototype.parserModelToView = function() {
     var _nodes = document.querySelectorAll('[att-bind]');
     var _self = this;
 
     _nodes.forEach(function(node) {
       var key = node.attributes['att-bind'].value;
 
-      node.textContent = ob[key];
+      node.textContent = _self.ob[key];
 
       _self.$subject.register(key, function() {
-        node.textContent = ob[key];
+        node.textContent = _self.ob[key];
       });
     });
   };
 
   /**
    * Parser all data from view to model
-   * @param  {Object} ob
    */
-  Attached.prototype.parserViewToModel = function(ob) {
+  Attached.prototype.parserViewToModel = function() {
     var _nodes = document.querySelectorAll('[att-model]');
     var _self = this;
 
